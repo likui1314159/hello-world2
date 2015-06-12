@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>实勘率报表</title>
+<style>
+*{padding:0;margin:0;}
+.layout{width:998px;margin-left:auto;margin-right:auto;}
+.btnsWrap{width:998px;position:absolute;top:20px;}
+.btnsWrap span{padding:5px 10px;font-size:12px;color:#fff;font-weight:bold;background-color:#ADC4EB;border-radius:3px;cursor:pointer;display:inline-block;box-shadow:0 0 3px #ccc;}
+.btnsWrap span.on{background-color:#5d92f9;}
+</style>
+</head>
+<body>
+<div class="layout">
+	<div class="btnsWrap">
+		<span class="on" onclick="setHref('${contextPath!}/lh/indeedAction/indeedWorker',this)">人员实勘率报表</span>
+		<span onclick="setHref('${contextPath!}/lh/indeedAction/indeedArea',this)">行政区实勘率报表</span>
+	</div>
+</div>
+<iframe id="indeedIframe" width="100%" frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="no"
+ allowtransparency="yes" src="${contextPath!}/lh/indeedAction/indeedWorker"></iframe>
+<script type="text/javascript" src="${contextPath!}/js/common/jquery-1.8.2.min.js"></script>
+<script>
+	function setHref(hf,obj){
+		$(obj).addClass("on").siblings("span").removeClass("on");
+		$("#indeedIframe").attr("src",hf);
+	}
+</script>
+</body>
+</html>

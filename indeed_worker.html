@@ -1,0 +1,187 @@
+<#assign lh=JspTaglibs["/META-INF/lh.tld"]>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>实堪率-人员</title>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/style/lh/lhgl.css" />
+<link rel="stylesheet" type="text/css" href="${contextPath!}/style/yw/yewu_index.css" />
+<script type="text/javascript" src="${contextPath!}/js/common/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/jjs/jjs.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/artDialog/artDialog.source.js?skin=jjs-alog"></script>
+<script type="text/javascript" src="${contextPath!}/js/common/common.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/myPagination/jquery.myPagination.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/jBox/jquery.jBox-2.3.min.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/common/jquery-jtemplates.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/common/comm_workname.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/highcharts/highcharts.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/sys/pourview.js"></script>
+<!-- 用户选择引用 -->
+<script type="text/javascript" src="${contextPath!}/js/common/common_dept_worker.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/style/common/fy-base.css" />
+
+<script type="text/javascript" src="${contextPath!}/js/lh/indeed_worker.js"></script>
+<style>
+#ym-window{overflow:visible!important;}
+#results_workerName{left:580px!important;top:22px!important;}
+#results_workerNameSk{left:780px!important;top:30px!important;}
+.ym-tit{text-align:left;line-height:22px;font-size:12px;margin-bottom:10px;}
+#sk-window {
+  background: #fff;
+  overflow: hidden;
+  font-size: 12px;
+  font-family: '宋体';
+  border-radius: 8px;
+  border: 2px;
+  box-shadow: 0 0 7px #999;
+  overflow: visible!important;
+}
+</style>
+<script>
+var _rootPath = '${contextPath!}';
+var _opDeptName = '${operator.deptName!}';
+var _opWorkerName = '${operator.worker!}';
+$(document).ready(function() { 
+	//图表查询调用方法
+// 	queryWorkDataChart('1');
+	//查询当前用户昨天的数据
+	queryWorkData('0');
+}); 
+var wId="${(selOp.workerId)!}";
+$(function(){
+	//直属下属复选框的单选效果
+		//$(":checkbox[name='workerType']").click(function(){
+	//	if($(this).attr("checked")){
+	//		$(":checkbox[name='workerType']").attr("checked",false);
+	//		$(this).attr("checked",true);
+	//	}
+//	});
+		$("#workerName").bind("keyup",getWorker);
+		$("#workerNameSk").bind("keyup",getWorkerSk);
+})
+	//人员检索输入框绑定方法
+	function getWorker() {
+		ajaxGetWorker_kyindex({obj:$(this),handleFun:'getCallBackfn',searchType:3,searchKey:wId});
+		$("#workerId").val("");
+		$("#deptName").val("");
+		$("#deptId").val("");
+		$(":checkbox[name='workerType']").attr("checked",false);
+	}
+	//人员检索输入框方法回调	
+	function getCallBackfn(id,msg) {
+		$("#"+id).val(msg.workerName);
+		$("#workerId").val(msg.workerId);
+		$("#deptName").val(msg.deptName);
+		hideDWResult('results_'+id);
+	}
+	
+	//趋势查询
+	//人员检索输入框绑定方法
+	function getWorkerSk() {
+		ajaxGetWorker_kyindex({obj:$(this),handleFun:'getCallBackfnSk',searchType:3,searchKey:wId});
+		$("#workerIdSk").val("");
+		$("#deptNameSk").val("");
+		$("#deptIdSk").val("");
+		$(":checkbox[name='workerType']").attr("checked",false);
+	}
+	//人员检索输入框方法回调	
+	function getCallBackfnSk(id,msg) {
+		$("#"+id).val(msg.workerName);
+		$("#workerIdSk").val(msg.workerId);
+// 		$("#deptName").val(msg.deptName);
+		hideDWResult('results_'+id);
+	}
+</script>
+<style type="text/css">
+	.fault{text-align:center; margin-top:150px;}
+	img{vertical-align:middle;}
+	span{height:100%; display:inline-block; vertical-align:middle;}
+	.bb-title { width:998px; height:40px; line-height:40px; margin:10px auto; font-size:16px; font-weight:bold; border-bottom:4px solid #adc4eb;}
+	.layout{width:998px;margin-left:auto;margin-right:auto;}
+	.input_text{padding-left:3px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+<div class="layout">
+   <div class="bb-title"><!-- 家家顺人事实堪率报表 --></div>
+</div>
+<div class="layout">
+   <div style="margin-top: 20px;" id="sk-window" class="pr">
+      <div style="background-color: #ADC4EB;height:35px;">
+		  <div class="search mt10 clearfix" style="width:990px;important;background: none;vertical-align: middle;padding:5px 0;">
+		      <label class="ym-tit">实勘率查询（每晚12时更新数据）</label>
+		      <span class="text" style="margin-left: 280px;">人员</span>
+		      <input type="hidden" id="deptId"  value="${selOp.deptId!}" />
+	     	  <input  class="input_text w70 f12" readonly="readonly" type="text" id="deptName"
+	     	  placeholder="部门" value="${selOp.deptName!}" style="width: 100px;"/> 
+			  <input type="hidden" id="workerId" value="${selOp.workerId!}" />
+			  <input class="input_text w60 f12" name="operation.workerName" id="workerName" type="text" placeholder="姓名" value="${selOp.worker!}"/>
+		       <label class="ml5 mt5">
+		       <input id="isUnderling" type="checkbox" value="1" /><span>查直属</span></label>
+		       <span class="text">查询时间</span>
+		       <input type="text" class="input_text w70 ml5 f12" onfocus="WdatePicker({readOnly:true})" id="startDateStr" value="${sysDate!}" />
+		       <span class="album-btn ml5" onclick="queryWorkData('0');">查询</span>
+		       <a href="javascript:void(0);" onclick="queryWorkData('1');" class="album-btn" target="_blank" style="margin-left: 20px;">报表下载</a>
+	       </div>
+	    </div>
+	    <div style="text-align:right;padding:10px 10px 0 0;">所登房源实勘数/所登房源数（作为登盘方的房源）=所登房源实勘率</div>
+	    <div class="tanCont mt10" >
+	        <div class="hasbody" id="dataDiv" style="overflow:auto;width:995px;important">
+		        <table cellpadding="0" cellspacing="0" style="width:100%" class="newadd-tablet secont wrap-y">
+	                <thead>
+	                      <tr>
+	                           <td class="brt tc">上级</td>
+	                           <td class="brt tc">归属人</td>
+	                           <td class="brt tc">实堪率(%)</td>
+	                           <td class="brt tc">拥有房源数</td>
+	                           <td class="brt tc">已实堪数</td>
+	                      </tr>
+	                </thead>
+		        	<tbody id="t_body">
+		        	</tbody>
+		        </table>
+	        </div>
+		</div>
+	  </div>
+
+<div style="margin-top: 40px;margin-bottom: 30px;" id="sk-window" class="pr" >
+     <div style="background-color: #ADC4EB;padding:5px 0;">
+       <label class="ym-tit">实勘率趋势查询（每晚12时更新数据）</label>
+       <span class="album-btn ml5" onclick="queryWorkDataChart('1');" style="margin-left: 180px;">过去七天</span>
+       <span class="text" >时间段选择</span>
+        <input id="start" name="dateS" placeholder="开始时间" type="text" style="margin-left:5px;" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'end\')}',readOnly:true})" class="f12 w120 input_text"/>
+        <span class="text">-</span>
+       <input id="end" name="dateE" placeholder="结束时间" type="text"  onfocus="WdatePicker({minDate:'#F{$dp.$D(\'start\')}',readOnly:true})" class="f12 w120 input_text"/>
+        <label style="margin-left: 10px;">人员选择</label>
+       <input type="hidden" id="workerIdSk" value="${selOp.workerId!}" />
+			<input class="input_text w50 ml5 f12" type="text" 
+			id="workerNameSk" placeholder="姓名" value="${selOp.worker!}" />
+       <span class="album-btn ml5" onclick="queryWorkDataChart('0');">查询</span>
+      </div>
+       <!-- 人员选择 
+       <div class="sqWraps popSqWrap" id="worker_div">
+	     	  <div class="topArea clearfix pt10 pb10" >
+                 <input type="hidden" id='workerId' value="" />
+                <span class="arrow down" onclick="hidelistDiv('worker');" style="top:17px;"></span>
+                <input type="text" class="w100" placeholder="在此输入用户进行查询" id="wk" onkeyup="getQxWorker();"/>
+              </div>
+              <div class="list" style="display:none;z-index:1000;position:absolute;background:#fff;width:990px;" id="worker_list_div">
+                <div class="listTop clearfix">请选择员工
+                   <label><input type="checkbox" onclick="selectAllBox('worker');" id="worker"/><span class="ml5">全选</span></label>
+                </div>
+                <div class="listUL clearfix" id="workerList">
+                </div>
+                <div class="btms"><span class="album-btn ml5" onclick="submit_worker();">确定</span></div>
+              </div>
+	     </div>
+	     -->
+		<div id="container" style="min-width: 500px; height: 400px; margin: 2px auto"></div>
+    </div>
+	<script type="text/javascript">
+	parent.document.all("indeedIframe").height=document.body.scrollHeight;
+	</script>
+</body>
+</html>

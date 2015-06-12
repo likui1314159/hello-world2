@@ -1,0 +1,149 @@
+<#assign lh=JspTaglibs["/META-INF/lh.tld"]>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>实堪率-区域</title>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/style/common/fy-base.css" />
+<link rel="stylesheet" type="text/css" href="${contextPath!}/style/lh/lhgl.css" />
+<link rel="stylesheet" type="text/css" href="${contextPath!}/style/yw/yewu_index.css" />
+<script type="text/javascript" src="${contextPath!}/js/common/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/jBox/i18n/jquery.jBox-zh-CN.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/jBox/jquery.jBox-2.3.min.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/jjs/jjs.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/common/jquery.tab.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/ymPrompt4/ymPrompt.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/common/common.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/common/comm_workname.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/common/jquery-jtemplates.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/highcharts/highcharts.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/highcharts/modules/exporting.src.js"></script>
+<script type='text/javascript' src='${contextPath!}/js/common/area-json.js'></script>
+<script type="text/javascript" src="${contextPath!}/js/common/baidu_tongji.js"></script>
+
+<script type="text/javascript" src="${contextPath!}/js/lh/indeed_area.js"></script>
+
+<script>
+	var _rootPath = '${contextPath!}';
+	var _opDeptName = '${operator.deptName!}';
+	var _opWorkerName = '${operator.worker!}';
+	$(document).ready(function () {
+		//loadXML();//加载城市列表
+	});
+</script>
+<style type="text/css">
+	.fault{text-align:center; margin-top:150px;}
+	img{vertical-align:middle;}
+	span{height:100%; display:inline-block; vertical-align:middle;}
+	.bb-title { width:998px; height:40px; line-height:40px; margin:10px auto; font-size:16px; font-weight:bold; border-bottom:4px solid #adc4eb;}
+	.layout{width:998px;margin-left:auto;margin-right:auto;}
+	#sk-window {
+	  background: #fff;
+	  overflow: hidden;
+	  font-size: 12px;
+	  font-family: '宋体';
+	  border-radius: 8px;
+	  border: 2px;
+	  box-shadow: 0 0 7px #999;
+	  overflow: visible!important;
+	}
+	.input_text{padding-left:3px;}
+	select.input_text{line-height:16px;height:22px;}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="layout">
+   <div class="bb-title"><!-- 家家顺行政区实堪率报表 --></div>
+</div>
+<div class="layout">
+ <div style="margin-top: 20px;" id="sk-window" class="pr">
+	<div class="search mt10 clearfix" style="margin-top: 20px;background-color: #ADC4EB;vertical-align: middle;padding:8px 0;">
+		<ul style="margin-left: 410px;">
+	        <ol >
+		        <li class="hasInputLi">
+		         	<input type="hidden" id="city_Id" name="city_Id" value=""/>
+					<input id="city_Name" name="city_Name" class="w80 input_text" value="" type="text" placeholder="城市" style="width: 100px;" />
+				</li>
+		        <li class="unborder">
+		         	<input type="hidden" id="xzqu_Id" value="" />
+					<select class="w60 f12 input_text" name="xzqy" id="xzqy" onchange="ajaxGetXzOrQyByCity(this.value,3,'pq');" style="width:100px;">
+						<option value="0" selected="selected">行政区域</option>
+					</select>
+				</li>
+		        <li class="unborder">
+		        	<input type="hidden" id="pq_Id" value="" />
+					<select name="pq" class="w60 f12 input_text" id="pq" style="width:80px;">
+						<option value="0" selected="selected">片区</option>
+					</select>
+				</li>
+				<li>
+					<span class="text" style="margin-left: 10px;">统计时间</span>
+					<input type="text" class="input_text w70 ml5 f12" onfocus="WdatePicker({readOnly:true})"
+					 	id="startDateStr" value="${sysDate!}"/>
+					<span class="album-btn ml5" onclick="querySkData();">查询</span>
+				</li>
+				<li>
+				  <a href="javascript:void(0);" onclick="querySkData('1');" class="album-btn" target="_blank" style="margin-left: 30px;">报表下载</a>
+				 </li>
+			</ol>
+		</ul>
+	    </div>
+	    <div style="text-align:right;padding:10px 10px 0 0;">所登房源实勘数/所登房源数（作为登盘方的房源）=所登房源实勘率</div>
+	     <div class="tanCont mt10">
+	        <div class="hasbody" id="dataDiv" style="overflow:auto;">
+		        <table cellpadding="0" cellspacing="0" style="width:100%" class="newadd-tablet secont wrap-y">
+	                <thead>
+	                      <tr>
+	                           <td class="brt tc">城市</td>
+	                           <td class="brt tc">行政区</td>
+	                           <td class="brt tc">片区</td>
+	                           <td class="brt tc">实堪率(%)</td>
+	                           <td class="brt tc">拥有房源数</td>
+	                           <td class="brt tc">已实堪数</td>
+	                      </tr>
+	                </thead>
+		        	<tbody id="t_body">
+		        	</tbody>
+		        </table>
+	        </div>
+		</div>
+		</div>
+	   </div>
+</div>
+</body>
+<script type="text/javascript" src="${contextPath!}/js/hcs/communityDic/communityDic.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/common/common_dept_worker.js"></script>
+<script>
+$(function() {
+	$("#city_Name").focus(function() {
+		ajaxGetCityInfo({
+			cityStr : 'city_Name',
+			rleft : 50,
+			handleFun : 'getCallBackfn_CityInfo'
+		});
+	});
+
+	$("#city_Name").keyup(function() {
+		$("#city_Id").val('');
+		$("#xzqy").val('0');
+		$("#pq").val('0');
+		ajaxGetCityInfo({
+			cityStr : 'city_Name',
+			handleFun : 'getCallBackfn_CityInfo'
+		});
+	});
+});
+/**选择城市后对行政区域的联动**/
+function getCallBackfn_CityInfo(msg) {
+	$("#city_Id").val(msg.snCode);
+	$("#city_Name").val(msg.cityName);
+	hideDWResult('results_city_Name');
+	ajaxGetXzOrQyByCity(msg.snCode, 2, "xzqy");
+}
+</script>
+<script type="text/javascript">
+parent.document.all("indeedIframe").height=document.body.scrollHeight;
+</script>
+</html>

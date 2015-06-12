@@ -1,0 +1,89 @@
+<#assign lh=JspTaglibs["/META-INF/lh.tld"]>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>实堪率-人员</title>
+
+<link rel="stylesheet" type="text/css" href="${contextPath!}/style/lh/lhgl.css" />
+<link rel="stylesheet" type="text/css" href="${contextPath!}/style/yw/yewu_index.css" />
+<script type="text/javascript" src="${contextPath!}/js/common/jquery-1.8.2.min.js"></script>
+
+<script type="text/javascript" src="${contextPath!}/js/common/common_dept_worker.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/common/common.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/style/common/fy-base.css" />
+
+<script>
+var _rootPath = '${contextPath!}';
+var _opDeptName = '${operator.deptName!}';
+var _opWorkerName = '${operator.worker!}';
+
+var wId="${(selOp.workerId)!}";
+$(function(){
+	//直属下属复选框的单选效果
+		//$(":checkbox[name='workerType']").click(function(){
+	//	if($(this).attr("checked")){
+	//		$(":checkbox[name='workerType']").attr("checked",false);
+	//		$(this).attr("checked",true);
+	//	}
+//	});
+		
+	$("#workerName").bind("keyup",getWorker);
+})
+	//人员检索输入框绑定方法
+	function getWorker() {
+		ajaxGetWorker_kyindex({obj:$(this),handleFun:'getCallBackfn',searchType:3,searchKey:wId});
+		$("#workerId").val("");
+		$("#deptName").val("");
+		$("#deptId").val("");
+		$(":checkbox[name='workerType']").attr("checked",false);
+	}
+	//人员检索输入框方法回调	
+	function getCallBackfn(id,msg) {
+		$("#"+id).val(msg.workerName);
+		$("#workerId").val(msg.workerId);
+		$("#deptName").val(msg.deptName);
+		hideDWResult('results_'+id);
+	}
+</script>
+<style type="text/css">
+.fault{text-align:center; margin-top:150px;}
+img{vertical-align:middle;}
+span{height:100%; display:inline-block; vertical-align:middle;}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="layout">
+   <input type="hidden" id="for-nav-head" value="8" />
+   <#include "../new-head.html">
+</div>
+<div class="search mt10 clearfix">
+       <span class="album-btn ml5" onclick="alert(1);">过去七天</span>
+       <span class="text fb">时间段选择</span>
+        <input id="start" name="dateS" placeholder="开始时间" type="text" class="input_text time w90" style="margin-left:5px;" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'end\')}',readOnly:true})"/>
+           <span class="text">-</span>
+           <input id="end" name="dateE" placeholder="结束时间" type="text" class="input_text time w90" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'start\')}',readOnly:true})"/>
+       <span class="text fb">人员选择</span>
+     	 <input type="hidden" id="deptId"  value="${selOp.deptId!}" />
+     	<input  class="input_text w70" readonly="readonly" type="text" id="deptName"
+     	 placeholder="部门" value="${selOp.deptName!}" /> 
+		<input type="hidden" id="workerId" value="${selOp.workerId!}" />
+		<input class="input_text w60" name="operation.workerName" id="workerName" type="text" placeholder="姓名" value="${selOp.worker!}">
+       <span class="album-btn ml5" onclick="queryWorkData();">查询</span>
+    </div>
+<div class="tanCont mt10">
+	<div id="container" style="min-width: 800px; height: 500px; margin: 0 auto"></div>
+</div>
+	
+    
+<!-- 手动录入他人指标 end -->
+<script type="text/javascript" src="${contextPath!}/js/jjs/jjs.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/common/comm_workname.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/artDialog/artDialog.source.js?skin=jjs-alog"></script>
+<script type="text/javascript" src="${contextPath!}/js/common/common.js"></script>
+<script type="text/javascript" src="${contextPath!}/js/highcharts/highcharts.js"></script>
+<!--页面方法调用js-->
+<script type="text/javascript" src="${contextPath!}/js/lh/indeed_worker.js"></script>
+</body>
+</html>
